@@ -1,0 +1,555 @@
+import React, { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { format } from "date-fns";
+import {
+  CalendarIcon,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Award,
+  Languages,
+  X,
+  Plus,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+
+const formSchema = z.object({
+  name: z.string().min(1, "Full name is required"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().min(10, "Please enter a valid phone number"),
+  specialization: z.string().min(1, "Please select a specialization"),
+  cities: z.array(z.string()).min(1, "Please select at least one city"),
+  joinDate: z.date({
+    required_error: "Please select joining date",
+  }),
+  experience: z.string().min(1, "Experience is required"),
+  certifications: z
+    .array(z.string())
+    .min(1, "Please add at least one certification"),
+  availability: z.string().min(1, "Please select availability"),
+  languages: z.array(z.string()).min(1, "Please select at least one language"),
+  notes: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+interface AddTrainerModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+// Mock data - in real app this would come from API
+const allCities = [
+  "Mumbai",
+  "Delhi",
+  "Bangalore",
+  "Chennai",
+  "Pune",
+  "Hyderabad",
+  "Kolkata",
+];
+
+const specializations = [
+  { value: "Physiotherapist", label: "Physiotherapist" },
+  { value: "Fitness Trainer", label: "Fitness Trainer" },
+  { value: "Nutritionist", label: "Nutritionist" },
+  { value: "Companion Care", label: "Companion Care" },
+  { value: "Occupational Therapist", label: "Occupational Therapist" },
+  { value: "Speech Therapist", label: "Speech Therapist" },
+  { value: "Mental Health Counselor", label: "Mental Health Counselor" },
+];
+
+const availabilityOptions = [
+  { value: "Full Time", label: "Full Time (40+ hours/week)" },
+  { value: "Part Time", label: "Part Time (20-39 hours/week)" },
+  { value: "Weekend Only", label: "Weekend Only" },
+  { value: "Flexible", label: "Flexible Schedule" },
+  { value: "On Call", label: "On-Call Basis" },
+];
+
+const languageOptions = [
+  "English",
+  "Hindi",
+  "Bengali",
+  "Tamil",
+  "Telugu",
+  "Marathi",
+  "Gujarati",
+  "Kannada",
+];
+
+export default function AddTrainerModal({
+  open,
+  onOpenChange,
+}: AddTrainerModalProps) {
+  const { toast } = useToast();
+  const [selectedCities, setSelectedCities] = useState<string[]>([]);
+  const [selectedCertifications, setSelectedCertifications] = useState<
+    string[]
+  >([]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [newCertification, setNewCertification] = useState("");
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      cities: [],
+      certifications: [],
+      languages: [],
+      notes: "",
+    },
+  });
+
+  const addCertification = () => {
+    if (
+      newCertification.trim() &&
+      !selectedCertifications.includes(newCertification.trim())
+    ) {
+      const updated = [...selectedCertifications, newCertification.trim()];
+      setSelectedCertifications(updated);
+      form.setValue("certifications", updated);
+      setNewCertification("");
+    }
+  };
+
+  const removeCertification = (cert: string) => {
+    const updated = selectedCertifications.filter((c) => c !== cert);
+    setSelectedCertifications(updated);
+    form.setValue("certifications", updated);
+  };
+
+  const toggleCity = (city: string) => {
+    const updated = selectedCities.includes(city)
+      ? selectedCities.filter((c) => c !== city)
+      : [...selectedCities, city];
+    setSelectedCities(updated);
+    form.setValue("cities", updated);
+  };
+
+  const toggleLanguage = (language: string) => {
+    const updated = selectedLanguages.includes(language)
+      ? selectedLanguages.filter((l) => l !== language)
+      : [...selectedLanguages, language];
+    setSelectedLanguages(updated);
+    form.setValue("languages", updated);
+  };
+
+  const onSubmit = (data: FormData) => {
+    const trainerData = {
+      id: Date.now(), // In real app, this would be generated by backend
+      name: data.name,
+      specialization: data.specialization,
+      cities: data.cities,
+      status: "Active",
+      clients: 0,
+      rating: 0,
+      sessionsThisWeek: 0,
+      certifications: data.certifications,
+      joinDate: format(data.joinDate, "yyyy-MM-dd"),
+      experience: data.experience,
+      email: data.email,
+      phone: data.phone,
+      availability: data.availability,
+      languages: data.languages,
+      notes: data.notes || "",
+    };
+    console.log("Trainer added:", trainerData);
+    toast({
+      title: "Trainer Added Successfully",
+      description: `${data.name} has been added to the system.`,
+    });
+    form.reset();
+    setSelectedCities([]);
+    setSelectedCertifications([]);
+    setSelectedLanguages([]);
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Trainer</DialogTitle>
+          <DialogDescription>
+            Fill in the trainer details to add them to the system.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Personal Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Personal Information
+              </h3>
+
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Full Name
+                    </FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter full name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        Email
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="Enter email address"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Phone className="h-4 w-4" />
+                        Phone Number
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter phone number" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="joinDate"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Joining Date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Pick joining date</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date("2020-01-01")}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Professional Information */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Professional Information
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="specialization"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="flex items-center gap-2">
+                        <Award className="h-4 w-4" />
+                        Specialization
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select specialization" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {specializations.map((spec) => (
+                            <SelectItem key={spec.value} value={spec.value}>
+                              {spec.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="experience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Experience</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., 8 years" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="availability"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Availability</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select availability" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {availabilityOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Certifications */}
+              <FormField
+                control={form.control}
+                name="certifications"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Certifications</FormLabel>
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Add certification"
+                          value={newCertification}
+                          onChange={(e) => setNewCertification(e.target.value)}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" &&
+                            (e.preventDefault(), addCertification())
+                          }
+                        />
+                        <Button
+                          type="button"
+                          onClick={addCertification}
+                          size="sm"
+                        >
+                          <Plus className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCertifications.map((cert) => (
+                          <div
+                            key={cert}
+                            className="flex items-center gap-1 bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-sm"
+                          >
+                            {cert}
+                            <button
+                              type="button"
+                              onClick={() => removeCertification(cert)}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Location & Languages */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-slate-900">
+                Location & Languages
+              </h3>
+
+              {/* Cities */}
+              <FormField
+                control={form.control}
+                name="cities"
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4" />
+                      Service Cities
+                    </FormLabel>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {allCities.map((city) => (
+                        <label
+                          key={city}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedCities.includes(city)}
+                            onChange={() => toggleCity(city)}
+                            className="rounded border-gray-300"
+                          />
+                          <span className="text-sm">{city}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Languages */}
+              <FormField
+                control={form.control}
+                name="languages"
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Languages className="h-4 w-4" />
+                      Languages
+                    </FormLabel>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {languageOptions.map((language) => (
+                        <label
+                          key={language}
+                          className="flex items-center space-x-2 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedLanguages.includes(language)}
+                            onChange={() => toggleLanguage(language)}
+                            className="rounded border-gray-300"
+                          />
+                          <span className="text-sm">{language}</span>
+                        </label>
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Additional Notes */}
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Additional Notes (Optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Add any additional notes, special skills, or preferences..."
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button type="submit">Add Trainer</Button>
+            </div>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

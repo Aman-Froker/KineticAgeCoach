@@ -10,7 +10,14 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  CalendarDays,
 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import ScheduleSessionModal, {
   SessionData,
 } from "@/components/ScheduleSessionModal";
@@ -108,7 +115,8 @@ export default function Sessions() {
   );
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [sessionToCancel, setSessionToCancel] = useState(null);
-  const { toast } = useToast(); // If not already declared
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleCancelSession = (sessionId: string | number) => {
     // Here you would typically make an API call to cancel the session
@@ -193,6 +201,13 @@ export default function Sessions() {
     setSelectedDate(newDate);
   };
 
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setCalendarOpen(false);
+    }
+  };
+
   const filteredSessions = sessions.filter(
     (session) => cityFilter === "all" || session.location === cityFilter
   );
@@ -241,13 +256,29 @@ export default function Sessions() {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setSelectedDate(new Date())}
               >
                 Today
-              </Button>
+              </Button> */}
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <CalendarDays className="h-4 w-4 mr-2" />
+                    Pick Date
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
 
             <div className="flex items-center gap-3">
@@ -263,25 +294,43 @@ export default function Sessions() {
                   <SelectItem value="Chennai">Chennai</SelectItem>
                 </SelectContent>
               </Select>
-
-              <Select value={viewType} onValueChange={setViewType}>
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Day View</SelectItem>
-                  <SelectItem value="week">Week View</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Session Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-slate-900">12</div>
+            <div className="text-sm text-slate-600">Total Sessions</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">8</div>
+            <div className="text-sm text-slate-600">Completed</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-blue-600">3</div>
+            <div className="text-sm text-slate-600">Scheduled</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-red-600">1</div>
+            <div className="text-sm text-slate-600">No Show</div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Session Calendar */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Time Slots */}
-        <div className="lg:col-span-1">
+        {/* <div className="lg:col-span-1">
           <Card>
             <CardHeader>
               <CardTitle className="text-sm font-medium text-slate-600">
@@ -300,10 +349,10 @@ export default function Sessions() {
               ))}
             </CardContent>
           </Card>
-        </div>
+        </div> */}
 
         {/* Sessions */}
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-4">
           <div className="space-y-4">
             {filteredSessions.map((session) => (
               <Card
@@ -398,34 +447,6 @@ export default function Sessions() {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Session Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-slate-900">12</div>
-            <div className="text-sm text-slate-600">Total Sessions</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">8</div>
-            <div className="text-sm text-slate-600">Completed</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">3</div>
-            <div className="text-sm text-slate-600">Scheduled</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">1</div>
-            <div className="text-sm text-slate-600">No Show</div>
-          </CardContent>
-        </Card>
       </div>
 
       <CancelSessionModal

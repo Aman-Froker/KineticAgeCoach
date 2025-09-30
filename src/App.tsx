@@ -11,9 +11,12 @@ import Sessions from "./pages/Sessions";
 import Reports from "./pages/Reports";
 import Incidents from "./pages/Incidents";
 import Communications from "./pages/Communications";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import Settings from "./pages/Settings";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import SearchResults from "./pages/SearchResults";
 
 const queryClient = new QueryClient();
 
@@ -24,13 +27,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="clients" element={<Clients />} />
             <Route path="trainers" element={<Trainers />} />
             <Route path="sessions" element={<Sessions />} />
             <Route path="reports" element={<Reports />} />
-            <Route path="profile" element={<Profile />} />a
+            <Route path="profile" element={<Profile />} />
+            <Route path="search" element={<SearchResults />} />
             {/* <Route path="incidents" element={<Incidents />} />
             <Route path="communications" element={<Communications />} />*/}
             <Route path="settings" element={<Settings />} />

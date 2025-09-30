@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -15,11 +15,19 @@ import {
 
 export function AdminHeader() {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
         <SidebarTrigger />
-        <div className="relative">
+        <form onSubmit={handleSearch} className="relative">
           <Search
             className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
             size={16}
@@ -27,8 +35,10 @@ export function AdminHeader() {
           <Input
             placeholder="Search clients, trainers, sessions..."
             className="pl-10 w-80 bg-slate-50 border-slate-200"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </div>
+        </form>
       </div>
 
       <div className="flex items-center gap-4">

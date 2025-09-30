@@ -3,7 +3,14 @@ import { MetricCard } from "@/components/MetricCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Users, Calendar, Activity, Clock } from "lucide-react";
+import {
+  Users,
+  Calendar,
+  Activity,
+  Clock,
+  TimerIcon,
+  Timer,
+} from "lucide-react";
 import {
   LineChart,
   Line,
@@ -97,7 +104,7 @@ export default function Dashboard() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <MetricCard
           title="Active Clients"
           value="1,247"
@@ -122,13 +129,21 @@ export default function Dashboard() {
           icon={Calendar}
           iconColor="text-blue-500"
         />
-        <MetricCard
-          title="Client Satisfaction"
-          value="4.6/5"
+        <MetricCard //changes the metric card with light red when negative value
+          title="To be Resubscribed"
+          value="5"
           change="+0.1 from last month"
           changeType="positive"
           icon={Activity}
           iconColor="text-emerald-500"
+        />
+        <MetricCard
+          title="Rescheduled Sessions"
+          value="5"
+          change="+0.1 from last month"
+          changeType="positive"
+          icon={TimerIcon}
+          iconColor="text-blue-500"
         />
       </div>
 

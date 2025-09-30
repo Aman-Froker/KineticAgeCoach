@@ -165,7 +165,7 @@ interface AddClientModalProps {
 }
 
 // Mock data - in real app this would come from API
-const cities = ["Mumbai", "Delhi", "Bangalore", "Chennai"];
+const cities = ["Whitefield", "Koramangala", "RajajiNagar", "Electronic City"];
 const genderOptions = ["Male", "Female", "Other"];
 const maritalStatusOptions = ["Single", "Married", "Divorced", "Widowed"];
 const stressLevelOptions = ["Mild", "Moderate", "Severe"];

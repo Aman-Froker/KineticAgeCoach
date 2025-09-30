@@ -46,10 +46,10 @@ const monthlyData = [
 ];
 
 const cityData = [
-  { name: "Mumbai", value: 35, color: "#0ea5e9" },
-  { name: "Delhi", value: 28, color: "#10b981" },
-  { name: "Bangalore", value: 22, color: "#f59e0b" },
-  { name: "Chennai", value: 15, color: "#ef4444" },
+  { name: "WhiteField", value: 35, color: "#0ea5e9" },
+  { name: "Koramangala", value: 28, color: "#10b981" },
+  { name: "RajajiNagar", value: 22, color: "#f59e0b" },
+  { name: "Electronic City", value: 15, color: "#ef4444" },
 ];
 
 const serviceData = [

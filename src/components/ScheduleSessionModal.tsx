@@ -124,7 +124,12 @@ const durations = [
   { value: "60", label: "60 minutes" },
 ];
 
-const locations = ["Mumbai", "Delhi", "Bangalore", "Chennai"];
+const locations = [
+  "Whitefield",
+  "Koramangala",
+  "RajajiNagar",
+  "Electronic City",
+];
 
 export default function ScheduleSessionModal({
   open,

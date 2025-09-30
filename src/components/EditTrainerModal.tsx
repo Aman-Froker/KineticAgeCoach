@@ -108,7 +108,12 @@ const specialties = [
   "Companion Care",
 ];
 
-const locations = ["Mumbai", "Delhi", "Bangalore", "Chennai"];
+const locations = [
+  "Whitefield",
+  "Koramangala",
+  "RajajiNagar",
+  "Electronic City",
+];
 
 const statusOptions = [
   { value: "active", label: "Active" },

@@ -40,7 +40,7 @@ const sessions = [
     trainer: "Dr. Priya Sharma",
     type: "Physiotherapy",
     status: "Scheduled",
-    location: "Mumbai",
+    location: "Whitefield",
   },
   {
     id: 2,
@@ -50,7 +50,7 @@ const sessions = [
     trainer: "John Smith",
     type: "Fitness Training",
     status: "Completed",
-    location: "Delhi",
+    location: "Koramangala",
   },
   {
     id: 3,
@@ -60,7 +60,7 @@ const sessions = [
     trainer: "Dr. Rajesh Kumar",
     type: "Nutrition Consultation",
     status: "No Show",
-    location: "Bangalore",
+    location: "RajajiNagar",
   },
   {
     id: 4,
@@ -70,7 +70,7 @@ const sessions = [
     trainer: "Sarah Wilson",
     type: "Companion Care",
     status: "Scheduled",
-    location: "Chennai",
+    location: "Electronic City",
   },
   {
     id: 5,
@@ -80,7 +80,7 @@ const sessions = [
     trainer: "Dr. Priya Sharma",
     type: "Physiotherapy",
     status: "In Progress",
-    location: "Mumbai",
+    location: "Whitefield",
   },
 ];
 
@@ -284,14 +284,16 @@ export default function Sessions() {
             <div className="flex items-center gap-3">
               <Select value={cityFilter} onValueChange={setCityFilter}>
                 <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="City" />
+                  <SelectValue placeholder="Area" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Cities</SelectItem>
-                  <SelectItem value="Mumbai">Mumbai</SelectItem>
-                  <SelectItem value="Delhi">Delhi</SelectItem>
-                  <SelectItem value="Bangalore">Bangalore</SelectItem>
-                  <SelectItem value="Chennai">Chennai</SelectItem>
+                  <SelectItem value="all">All Areas</SelectItem>
+                  <SelectItem value="Whitefield">Whitefield</SelectItem>
+                  <SelectItem value="Koramangala">Koramangala</SelectItem>
+                  <SelectItem value="RajajiNagar">RajajiNagar</SelectItem>
+                  <SelectItem value="Electronic City">
+                    Electronic City
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

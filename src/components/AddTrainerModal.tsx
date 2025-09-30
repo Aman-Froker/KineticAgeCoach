@@ -89,13 +89,13 @@ interface AddTrainerModalProps {
 
 // Mock data - in real app this would come from API
 const allCities = [
-  "Mumbai",
-  "Delhi",
-  "Bangalore",
-  "Chennai",
-  "Pune",
-  "Hyderabad",
-  "Kolkata",
+  "Whitefield",
+  "Koramangala",
+  "RajajiNagar",
+  "Electronic City",
+  "Lalbagh",
+  "Brookefield",
+  "Jayanagar",
 ];
 
 const specializations = [
